@@ -18,7 +18,7 @@ public class ManagerComponent : MonoBehaviour
         }
         if (column == 5) return;
         Event e = Event.current;
-        if(Input.GetKey(KeyCode.RightAlt) && e.keyCode.ToString().Length == 1 && char.IsLetter(e.keyCode.ToString()[0]))
+        if(Input.GetKey(KeyCode.RightAlt) && e.keyCode.ToString().Length == 1 && e.type == EventType.KeyDown)
             {
             switch (e.keyCode)
                 {
@@ -46,7 +46,10 @@ public class ManagerComponent : MonoBehaviour
                 case (KeyCode.N):
                     FillIn("Ń");
                     break;
-                }
+                case (KeyCode.C):
+                    FillIn("Ć");
+                    break;
+            }
             }
         else if (e.type==EventType.KeyDown && e.keyCode.ToString().Length == 1 && char.IsLetter(e.keyCode.ToString()[0]))
         {
@@ -58,7 +61,6 @@ public class ManagerComponent : MonoBehaviour
             TextMeshPro text = GameObject.Find("Text[" + line + "][" + column + "]").transform.GetChild(0).transform.GetChild(1).GetComponent<TextMeshPro>();
             text.text = c;
             column++;
-            Debug.Log(column + " " + line);
         }
     }
 
