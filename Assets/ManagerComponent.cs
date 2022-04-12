@@ -1,16 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class ManagerComponent : MonoBehaviour
 {
+    int line = 0;
+    int column = 0;
     // Update is called once per frame
     void OnGUI()
     {
-        int line = 1;
-        int column = 1;
+        if (Input.GetKeyDown(KeyCode.Return) && column == 5)
+        {
+            column = 0;
+            line++;
+        }
+        if (column == 5) return;
         Event e = Event.current;
-        if(Input.GetKey(KeyCode.RightAlt && e.keyCode.ToString().Length == 1 && char.IsLetter(e.keyCode.ToString()[0]))
+        if(Input.GetKey(KeyCode.RightAlt) && e.keyCode.ToString().Length == 1 && char.IsLetter(e.keyCode.ToString()[0]))
             {
             switch (e.keyCode)
                 {
@@ -44,17 +52,15 @@ public class ManagerComponent : MonoBehaviour
         {
             FillIn(e.keyCode.ToString());
         }
-        if (Input.GetKeyDown(KeyCode.Return) && column==6)
+
+        void FillIn(string c)
         {
-            column = 1;
-            line++;
+            TextMeshPro text = GameObject.Find("Text[" + line + "][" + column + "]").transform.GetChild(0).transform.GetChild(1).GetComponent<TextMeshPro>();
+            text.text = c;
+            column++;
+            Debug.Log(column + " " + line);
         }
     }
 
-    public void FillIn (string c)
-    {
-        Text text = GameObject.Find("Text[" + line + "][" + column + "]").GetComponent<Text>();
-        text.text = c;
-        column++;
-    }
+
 }

@@ -1,26 +1,29 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class CubicleScript : MonoBehaviour
 {
 
     TMPro.TextMeshPro textMesh;
-
+    
     // Start is called before the first frame update
     void Start()
     {
+        
+        
         textMesh = this.GetComponentInChildren<TMPro.TextMeshPro>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        SetLetter('B');
+    
         SetIfCorrect(IsLetterCorrect.Incorrect);
     }
-
-    void SetLetter(char letter)
+    
+    void SetLetter(string letter)
     {
         textMesh.text = letter.ToString();
     }
