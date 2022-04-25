@@ -20,7 +20,7 @@ public class CubicleScript : MonoBehaviour
     void Update()
     {
     
-        SetIfCorrect(IsLetterCorrect.Incorrect);
+        //SetIfCorrect(IsLetterCorrect.Incorrect);
     }
     
     void SetLetter(string letter)
