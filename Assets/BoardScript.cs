@@ -11,8 +11,8 @@ public class BoardScript : MonoBehaviour
     public GameObject losingAnimationObject;
     private float timeRemaining;
     private bool hasRanOutOfTime;
-    private bool hasWon;
-    private bool hasLost;
+    private static bool hasWon;
+    private static bool hasLost;
     private Text text;
 
     // Start is called before the first frame update
@@ -35,7 +35,7 @@ public class BoardScript : MonoBehaviour
         {
             timeRemaining -= Time.deltaTime;
         }
-        else if (!hasRanOutOfTime)
+        else if (!hasRanOutOfTime && !hasWon && !hasLost)
         {
             hasRanOutOfTime = true;
             Invoke("playLosingAnimation", 0.0f);
@@ -81,13 +81,13 @@ public class BoardScript : MonoBehaviour
         }
     }
 
-    void playWinningAnimation()
+    public void playWinningAnimation()
     {
         winningAnimationObject.GetComponent<Animator>().Play("sliderAnim");
         hasWon = true;
     }
 
-    void playLosingAnimation()
+    public void playLosingAnimation()
     {
         losingAnimationObject.GetComponent<Animator>().Play("sliderAnim");
         hasLost = true;

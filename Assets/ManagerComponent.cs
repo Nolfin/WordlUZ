@@ -18,8 +18,13 @@ public class ManagerComponent : MonoBehaviour
     private string theWord;
     private string[] theWordArray = new string[5];
 
+    private bool hasWon;
+    private bool hasLost;
+
+    public GameObject board;
+
     // Update is called once per frame
-    
+
     private void OnGUI()
     {
         var e = Event.current;
@@ -133,6 +138,7 @@ public class ManagerComponent : MonoBehaviour
     public void CheckForSimilarities()
     {
         bool[] usedLetters = new bool[5];
+        bool fullCorrect = true;
         for (int i = 0; i < 5; i++)
         {
             usedLetters[i] = false;
@@ -141,6 +147,15 @@ public class ManagerComponent : MonoBehaviour
                 .GetComponent<TextMeshPro>().color = new Color(0, 255, 0, 255);
                 usedLetters[i] = true;
             }
+            else
+            {
+                fullCorrect = false;
+            }
+        }
+        
+        if (fullCorrect)
+        {
+            board.GetComponent<BoardScript>().playWinningAnimation();
         }
 
         for (int i = 0; i < 5; i++)

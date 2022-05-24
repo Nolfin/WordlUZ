@@ -2334,10 +2334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dd9bd07dfe4a544eaaf8ab3fc9596e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode1: {fileID: 295294798}
-  mode0: {fileID: 893095414}
-  mode2: {fileID: 622131466}
-  newGameButton: {fileID: 416550113}
+  board: {fileID: 1606526099}
 --- !u!4 &511542185
 Transform:
   m_ObjectHideFlags: 0
