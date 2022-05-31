@@ -4,12 +4,23 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 using Random = System.Random;
 
 public class ManagerComponent : MonoBehaviour
 {
-
+    private Vector3 targetPosition = new Vector3(18f, -0.5f, 10.6f);
+    private Vector3 startPosition = new Vector3(36f, -0.5f, 9f);
+    public GameObject cubiclePrefab;
+    GameObject[,] cubicles;
+    public GameObject winningAnimationObject;
+    public GameObject losingAnimationObject;
+    private float timeRemaining;
+    private bool hasRanOutOfTime;
+    private static bool hasWon;
+    private static bool hasLost;
+    private Text text;
     private short activeMode = 0;
     private int column;
     private readonly string[] inputWord = new string[5];
@@ -18,15 +29,63 @@ public class ManagerComponent : MonoBehaviour
     private string theWord;
     private string[] theWordArray = new string[5];
 
-    private bool hasWon;
-    private bool hasLost;
-
     public GameObject board;
 
     // Update is called once per frame
 
+    void Start()
+    {
+        cubicles = new GameObject[6, 5];
+        GenerateCubicles();
+        timeRemaining = 120;
+        hasRanOutOfTime = false;
+        hasLost = false;
+        hasWon = false;
+    }
+    void Update()
+    {
+        if (timeRemaining > 0 && !hasWon && !hasLost && activeMode==2)
+        {
+            
+            timeRemaining -= Time.deltaTime;
+        }
+        else if (!hasRanOutOfTime && !hasWon && !hasLost && activeMode==2)
+        {
+            hasRanOutOfTime = true;
+            playLosingAnimation();
+        }
+    }
+    void GenerateCubicles()
+    {
+        for (int i=0; i<6; i++)
+        {
+            for (int j=0; j<5; j++)
+            {
+                cubicles[i,j] = (GameObject)Instantiate(cubiclePrefab);
+                cubicles[i, j].name = "Text[" + (5-i) + "][" + j + "]";
+                cubicles[i, j].transform.position = new Vector3(j * 1.1f - 2.75f + 0.55f, i * 1.1f - 3.3f, 0.0f);
+            }
+        }
+    }
+    public void playWinningAnimation()
+    {
+        iTween.MoveTo(winningAnimationObject, iTween.Hash("position", targetPosition, "time", 1.0f, "easetype", iTween.EaseType.easeInOutSine));
+        hasWon = true;
+    }
+
+    public void playLosingAnimation()
+    {
+        iTween.MoveTo(losingAnimationObject, iTween.Hash("position", targetPosition, "time", 1.0f, "easetype", iTween.EaseType.easeInOutSine));
+        hasLost = true;
+    }
+    private string getRoundedTime()
+    {
+        if (timeRemaining <= 0 || activeMode!=2) return null;
+        return "Time: " + Mathf.RoundToInt(timeRemaining).ToString();
+    }
     private void OnGUI()
     {
+        
         var e = Event.current;
         if (Input.GetKeyDown(KeyCode.Return) && column == 5 && e.type == EventType.KeyDown)
         {
@@ -44,6 +103,7 @@ public class ManagerComponent : MonoBehaviour
             CheckForSimilarities();
             if (activeMode == 1) ChangeRandomLetterColour();
             line++;
+            if(line==6) playLosingAnimation();
         }
 
         if (Input.GetKey(KeyCode.Backspace) && e.type == EventType.KeyDown)
@@ -53,7 +113,7 @@ public class ManagerComponent : MonoBehaviour
             FillIn(" ");
             column--;
         }
-
+        GUI.Label(new Rect(0, 0, 100, 20), getRoundedTime());
         if (column == 5) return;
 
         if (Input.GetKey(KeyCode.RightAlt) && e.keyCode.ToString().Length == 1 && e.type == EventType.KeyDown)
@@ -91,7 +151,7 @@ public class ManagerComponent : MonoBehaviour
                  char.IsLetter(e.keyCode.ToString()[0])) FillIn(e.keyCode.ToString());
 
         EventSystem.current.SetSelectedGameObject(null);
-
+        
 
 
     }
@@ -155,7 +215,7 @@ public class ManagerComponent : MonoBehaviour
         
         if (fullCorrect)
         {
-            board.GetComponent<BoardScript>().playWinningAnimation();
+            playWinningAnimation();
         }
 
         for (int i = 0; i < 5; i++)
@@ -196,12 +256,13 @@ public class ManagerComponent : MonoBehaviour
             GameObject.Find("Text[" + Math.Floor(i / 5) + "][" + i % 5 + "]").transform.GetChild(0).transform
                 .GetChild(1)
                 .GetComponent<TextMeshPro>().color = new Color(220, 220, 220, 255);
-            Debug.Log("Liers");
+            Debug.Log("Liars");
         }
 
         line = 0;
         column = 0;
         activeMode = 1;
+        Reset();
     }
     
     public void ChangeModeTo0()
@@ -213,11 +274,13 @@ public class ManagerComponent : MonoBehaviour
             GameObject.Find("Text[" + Math.Floor(i / 5) + "][" + i % 5 + "]").transform.GetChild(0).transform
                 .GetChild(1)
                 .GetComponent<TextMeshPro>().color = new Color(220, 220, 220, 255);
+            Debug.Log("Normal");
         }
 
         line = 0;
         column = 0;
         activeMode = 0;
+        Reset();
     }
     
     public void ChangeModeTo2()
@@ -229,11 +292,13 @@ public class ManagerComponent : MonoBehaviour
             GameObject.Find("Text[" + Math.Floor(i / 5) + "][" + i % 5 + "]").transform.GetChild(0).transform
                 .GetChild(1)
                 .GetComponent<TextMeshPro>().color = new Color(220, 220, 220, 255);
+            Debug.Log("Ranked");
         }
 
         line = 0;
         column = 0;
         activeMode = 2;
+        Reset();
     }
     public void NewGame()
     {
@@ -248,6 +313,7 @@ public class ManagerComponent : MonoBehaviour
 
         line = 0;
         column = 0;
+        Reset();
     }
 
     public void ChangeRandomLetterColour()
@@ -259,24 +325,45 @@ public class ManagerComponent : MonoBehaviour
             .GetComponent<TextMeshPro>().color;
         if (colorToChange == new Color(0, 255, 0, 255))
         {
-            if(random.Next(0, 1)==0) colorToChange = new Color(220, 220, 220, 255);
+            if(random.Next(2)==1) colorToChange = new Color(220, 220, 220, 255);
             else colorToChange = new Color(255, 255, 0, 255);
-            Debug.Log("Lied 1"+letterToLie);
+            Debug.Log("Lied green at position "+letterToLie);
+            GameObject.Find("Text[" + line + "][" + letterToLie + "]").transform.GetChild(0).transform
+                .GetChild(1)
+                .GetComponent<TextMeshPro>().color = colorToChange;
+            return;
         }
         if (colorToChange == new Color(220, 220, 220, 255))
         {
-            if(random.Next(0, 1)==0) colorToChange = new Color(0, 255, 0, 255);
+            if(random.Next(2)==1) colorToChange = new Color(0, 255, 0, 255);
             else colorToChange = new Color(255, 255, 0, 255);
-            Debug.Log("Lied 2"+letterToLie);
+            Debug.Log("Lied gray at position "+letterToLie);
+            GameObject.Find("Text[" + line + "][" + letterToLie + "]").transform.GetChild(0).transform
+                .GetChild(1)
+                .GetComponent<TextMeshPro>().color = colorToChange;
+            return;
         }
         if (colorToChange == new Color(255, 255, 0, 255))
         {
-            if(random.Next(0,1)==0) colorToChange = new Color(220, 220, 220, 255);
+            if(random.Next(2)==1) colorToChange = new Color(220, 220, 220, 255);
             else colorToChange = new Color(0, 255, 0, 255);
-            Debug.Log("Lied 3"+letterToLie);
+            Debug.Log("Lied yellow at position "+letterToLie);
+            GameObject.Find("Text[" + line + "][" + letterToLie + "]").transform.GetChild(0).transform
+                .GetChild(1)
+                .GetComponent<TextMeshPro>().color = colorToChange;
+            return;
         }
-        GameObject.Find("Text[" + line + "][" + letterToLie + "]").transform.GetChild(0).transform
-            .GetChild(1)
-            .GetComponent<TextMeshPro>().color = colorToChange;
+    }
+
+    public void Reset()
+    {
+
+        if (hasLost) iTween.MoveTo(losingAnimationObject, iTween.Hash("position", startPosition, "time", 1.0f, "easetype", iTween.EaseType.easeInOutSine));
+        if (hasWon) iTween.MoveTo(winningAnimationObject, iTween.Hash("position", startPosition, "time", 1.0f, "easetype", iTween.EaseType.easeInOutSine));
+        Debug.Log("Reset called");
+        hasLost = false;
+        hasWon = false;
+        timeRemaining = 120;
+
     }
 }

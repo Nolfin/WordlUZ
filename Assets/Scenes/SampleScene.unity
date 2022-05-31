@@ -2334,6 +2334,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dd9bd07dfe4a544eaaf8ab3fc9596e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cubiclePrefab: {fileID: 6673528529817637890, guid: 22387b8d4e7190843be6bae06ad1261a, type: 3}
+  winningAnimationObject: {fileID: 1855414339}
+  losingAnimationObject: {fileID: 1871341550}
   board: {fileID: 1606526099}
 --- !u!4 &511542185
 Transform:
@@ -6275,7 +6278,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1606526100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6283,7 +6286,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1606526099}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7817bc5f1b8dad74ea20dce19467231b, type: 3}
   m_Name: 
@@ -7141,7 +7144,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1855414339}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 0d4d5edbfce0c6f4f82d624a5a6a223d, type: 2}
   m_CullingMode: 0
@@ -7330,7 +7333,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1871341550}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 0d4d5edbfce0c6f4f82d624a5a6a223d, type: 2}
   m_CullingMode: 0
